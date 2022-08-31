@@ -5,6 +5,10 @@ const userValidator = require('../middleware/userValidator')
 
 router.
     route('/signup').
-    post(userValidator.user(), userController.signup)
+    post(userValidator.signup(), userController.signup)
+
+router.
+    route('/login').
+    post(userValidator.login(), userController.login)
 
 module.exports = router;

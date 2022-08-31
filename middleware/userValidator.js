@@ -1,6 +1,6 @@
 const { body } = require('express-validator');
 
-exports.user = () => [
+exports.signup = () => [
     body('email')
         .isEmail()
         .withMessage('Please enter a valid email')
@@ -14,4 +14,13 @@ exports.user = () => [
             }
             return true
         })
+]
+
+exports.login = () => [
+    body('email')
+        .isEmail()
+        .withMessage('Please enter a valid email')
+        .normalizeEmail(),
+    body('password', 'Password is required')
+        .trim().not().isEmpty()
 ]
