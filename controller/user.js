@@ -11,12 +11,13 @@ exports.signup = async (req, res, next) => {
                 message: error.array()[0].msg,
             })
         }
-        const exists = await User.findOne({ email: req.body.email });
+        const { email, password, firstName, lastName } = req.body
+        const exists = await User.findOne({ email });
         if(exists){
             return res.status(409).json({ message: 'Email already exists' })
         }
-        const hashedPassword = await hashPassword(req.body.password);
-        User.create({ ...req.body, password: hashedPassword }).then(user => {
+        const hashedPassword = await hashPassword(password);
+        User.create({ email, password, firstName, lastName, password: hashedPassword }).then(user => {
             user.password = undefined;
             const accessToken = signJwt(user._id);
             res.status(201).json({
@@ -26,7 +27,7 @@ exports.signup = async (req, res, next) => {
                 }
             })
         }).catch(err => {
-            res.status(401).json({
+            res.status(400).json({
                 message: err.message,
             })
 

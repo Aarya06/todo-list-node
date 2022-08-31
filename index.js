@@ -4,6 +4,7 @@ require('./config/mongoose.config').connect();
 const express = require('express');
 
 const userRoutes = require('./route/user');
+const todoRoutes = require('./route/todo')
 
 const app = express()
 const port = process.env.PORT || 3000
@@ -27,6 +28,7 @@ app.get('/', (_, res) => {
 })
 
 app.use('/users', userRoutes)
+app.use('/todos', todoRoutes)
 
 app.listen(port, () => {
     console.log(`Server is Listening on port ${port}`)
