@@ -11,4 +11,7 @@ router.
     route('/login').
     post(userValidator.login(), userController.login)
 
+router.
+    route('/refresh').post(userController.refreshToken)
+
 module.exports = router;

@@ -13,11 +13,11 @@ module.exports = async (req, res, next) => {
     if (!token) {
         return unAuthorizedError(res)
     }
-    const currentUserId = verifyJwt(token);
-    if(!currentUserId){
+    const currentUser = verifyJwt(token);
+    if(!currentUser){
         return unAuthorizedError(res)
     }
-    await User.findById(currentUserId).then(user => {
+    await User.findById(currentUser.id).then(user => {
         if (!user) {
             return unAuthorizedError(res)
         }

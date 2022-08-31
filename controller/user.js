@@ -1,6 +1,6 @@
 const User = require('../model/user');
 const { hashPassword, comparePassword } = require('../utils/bcrypt');
-const { signJwt } = require('../utils/jwt');
+const { signJwt, signJwtRefreshToken, verifyJwtRefreshToken } = require('../utils/jwt');
 const { validationResult } = require('express-validator');
 
 exports.signup = async (req, res, next) => {
@@ -20,10 +20,12 @@ exports.signup = async (req, res, next) => {
         User.create({ email, password, firstName, lastName, password: hashedPassword }).then(user => {
             user.password = undefined;
             const accessToken = signJwt(user._id);
+            const refreshToken = signJwtRefreshToken(user._id)
             res.status(201).json({
                 user,
                 token: {
-                    accessToken
+                    accessToken,
+                    refreshToken
                 }
             })
         }).catch(err => {
@@ -64,10 +66,12 @@ exports.login = async (req, res, next) => {
             }
             user.password = undefined;
             const accessToken = signJwt(user._id);
+            const refreshToken = signJwtRefreshToken(user._id)
             res.status(200).json({
                 user,
                 token: {
-                    accessToken
+                    accessToken,
+                    refreshToken
                 }
             })
         }).catch(err => {
@@ -76,6 +80,33 @@ exports.login = async (req, res, next) => {
             })
         })
 
+    } catch (error) {
+        res.status(500).json({
+            msg: 'Internal Server Error'
+        })
+    }
+}
+
+exports.refreshToken = async(req, res, next) => {
+    try {
+        const { refreshToken: token } = req.body;
+        if(!token){
+            return res.status(400).json({
+                msg: 'Invalid token'
+            })
+        }
+        const currentUser = verifyJwtRefreshToken(token)
+        if(!currentUser){
+            return res.status(400).json({
+                msg: 'Invalid token'
+            })
+        }
+        const accessToken = signJwt(currentUser.id);
+        const refreshToken = signJwtRefreshToken(currentUser.id)
+        res.status(200).json({
+            accessToken,
+            refreshToken
+        })
     } catch (error) {
         res.status(500).json({
             msg: 'Internal Server Error'
