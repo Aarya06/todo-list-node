@@ -1,5 +1,6 @@
-const dotenv = require('dotenv');
-dotenv.config();
+require('dotenv').config();
+require('./config/mongoose.config').connect();
+
 const express = require('express');
 
 const app = express()
