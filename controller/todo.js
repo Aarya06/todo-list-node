@@ -10,7 +10,7 @@ exports.add = async (req, res, next) => {
             })
         }
         const { title } = req.body
-        Todo.create({ title }).then(todo => {
+        Todo.create({ title, user: req.user }).then(todo => {
             res.status(201).json(todo)
         }).catch(err => {
             res.status(400).json({
@@ -27,7 +27,7 @@ exports.add = async (req, res, next) => {
 
 exports.getAllTodos = async (req, res, next) => {
     try {
-        Todo.find().then(todo => {
+        Todo.find({ user: req.user._id }).then(todo => {
             res.status(200).json(todo)
         }).catch(err => {
             res.status(400).json({
@@ -44,9 +44,8 @@ exports.getAllTodos = async (req, res, next) => {
 
 exports.getTodo = async (req, res, next) => {
     try {
-        
-        Todo.findById(req.params.id).then(todo => {
-            if(!todo){
+        Todo.findOne({ _id: req.params.id, user: req.user._id }).populate('user').then(todo => {
+            if (!todo) {
                 return res.status(404).json({
                     message: 'Todo does not exist',
                 })
@@ -67,14 +66,14 @@ exports.getTodo = async (req, res, next) => {
 
 exports.deleteTodo = async (req, res, next) => {
     try {
-        const todo = await Todo.findById(req.params.id)
-        if(!todo){
+        const todo = await Todo.findOne({ _id: req.params.id, user: req.user._id })
+        if (!todo) {
             return res.status(404).json({
                 message: 'Todo does not exist',
             })
         }
         Todo.findByIdAndDelete(req.params.id).then(() => {
-            res.status(204).json({message: 'deleted'})
+            res.status(204).json({ message: 'deleted' })
         }).catch(err => {
             res.status(400).json({
                 message: err.message,
@@ -90,8 +89,8 @@ exports.deleteTodo = async (req, res, next) => {
 
 exports.updateTodo = async (req, res, next) => {
     try {
-        const todo = await Todo.findById(req.params.id)
-        if(!todo){
+        const todo = await Todo.findOne({ _id: req.params.id, user: req.user._id })
+        if (!todo) {
             return res.status(404).json({
                 message: 'Todo does not exist',
             })
