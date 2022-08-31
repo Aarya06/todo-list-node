@@ -1,20 +1,25 @@
 const User = require("../model/user");
 const { verifyJwt } = require("../utils/jwt");
 
+function unAuthorizedError(res) {
+    return res.status(401).json({
+        msg: 'You are not authorized'
+    })
+}
+
 module.exports = async (req, res, next) => {
     const authHeader = req.headers['authorization']
     const token = authHeader && authHeader.split(' ')[1]
     if (!token) {
-        return res.status(401).json({
-            msg: 'You are not authorized'
-        })
+        return unAuthorizedError(res)
     }
-    const currentUser = verifyJwt(token);
-    await User.findById(currentUser.id).then(user => {
+    const currentUserId = verifyJwt(token);
+    if(!currentUserId){
+        return unAuthorizedError(res)
+    }
+    await User.findById(currentUserId).then(user => {
         if (!user) {
-            return res.status(401).json({
-                msg: 'You are not authorized'
-            })
+            return unAuthorizedError(res)
         }
         req.user = user
     })

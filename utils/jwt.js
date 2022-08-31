@@ -5,6 +5,10 @@ exports.signJwt = (id) => jwt.sign({id}, process.env.JWT_SECRET, {
 })
 
 exports.verifyJwt = (token) => {
-    const userId = jwt.verify(token, process.env.JWT_SECRET)
-    return userId;
+    try {
+        const userId = jwt.verify(token, process.env.JWT_SECRET)
+        return userId;
+    } catch (error) {
+        return null
+    }
 }
