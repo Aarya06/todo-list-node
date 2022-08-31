@@ -3,6 +3,8 @@ require('./config/mongoose.config').connect();
 
 const express = require('express');
 
+const userRoutes = require('./route/user');
+
 const app = express()
 const port = process.env.PORT || 3000
 
@@ -23,6 +25,8 @@ app.get('/', (_, res) => {
     }
     
 })
+
+app.use('/users', userRoutes)
 
 app.listen(port, () => {
     console.log(`Server is Listening on port ${port}`)

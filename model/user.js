@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const userSchema = new Schema({
-    fistName: {
+    firstName: {
         type: String,
         default: null
     },
@@ -19,7 +19,7 @@ const userSchema = new Schema({
         type: String,
         require: [true, 'Password is required']
     }
-})
+}, { timestamps: true, versionKey: false })
 
 userSchema.post('save', (error, doc, next) => {
     if (error.name === 'MongoError' && error.code === 11000) {
